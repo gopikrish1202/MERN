@@ -19,6 +19,8 @@ app.post("/api/chat", async (req, res) => {
   try {
     const message = req.body.message;
 
+  
+
     const response = await axios.post(
       "https://api.groq.com/openai/v1/chat/completions",
       {
@@ -32,7 +34,9 @@ app.post("/api/chat", async (req, res) => {
         }
       }
     );
-
+    console.log("api",process.env.GROQ_API_KEY)
+      console.log("response",response)
+     
     res.json({
       reply: response.data.choices[0].message.content
     });
