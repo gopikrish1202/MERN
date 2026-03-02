@@ -1,10 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My First Website</title>
+    <title>AI Chat App</title>
 </head>
 <body>
-    <h1>Hello from Render 🚀</h1>
-    <p>This is my first deployed website.</p>
+    <h2>AI Chat</h2>
+
+    <!-- User input -->
+    <input type="text" id="message" placeholder="Ask something..." size="40">
+    <button onclick="sendMessage()">Send</button>
+
+    <!-- AI response -->
+    <p><b>AI Reply:</b></p>
+    <div id="response"></div>
+
+    <script>
+        async function sendMessage() {
+            const message = document.getElementById("message").value;
+
+            const res = await fetch("/api/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ message })
+            });
+
+            const data = await res.json();
+
+            document.getElementById("response").innerText = data.reply;
+        }
+    </script>
 </body>
 </html>
