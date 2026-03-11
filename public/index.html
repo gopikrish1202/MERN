@@ -293,7 +293,7 @@
   <div class="input-row">
     <input type="text" id="pnrInput" placeholder="e.g. 4810234567" maxlength="10"
       oninput="this.value=this.value.replace(/\D/g,'')"
-      onkeydown="if(event.key==='Enter') checkPNR()" />
+      onkeydown="if(event.key==='Enter')  checkPNR()" />
     <button class="btn" id="checkBtn" onclick="checkPNR()">Check →</button>
   </div>
   <div id="errorMsg" style="display:none" class="error-msg"></div>
@@ -301,42 +301,54 @@
 
 <div id="resultCard" style="display:none" class="result-card"></div>
 
-<p class="hint">Demo PNRs to try:<br>4810234567 &nbsp;·&nbsp; 4810235012 &nbsp;·&nbsp; 4810235198</p>
+
 
 <script>
-const DB = {
-  "4810234567": {
-    train: "12951 Mumbai Rajdhani",
-    from: "New Delhi", fromCode: "NDLS",
-    to: "Mumbai Central", toCode: "MMCT",
-    date: "15 Apr 2025", dep: "16:25", arr: "08:15",
-    cls: "3A — AC 3 Tier",
-    passengers: [
-      { name: "Rahul K.",  init: "RK", seat: "B3 · 28 · Lower",       status: "CNF"    },
-      { name: "Priya T.",  init: "PT", seat: "B3 · 30 · Lower",       status: "CNF"    },
-    ]
-  },
-  "4810235012": {
-    train: "12953 August Kranti Rajdhani",
-    from: "Hazrat Nizamuddin", fromCode: "NZM",
-    to: "Mumbai Central", toCode: "MMCT",
-    date: "16 Apr 2025", dep: "17:25", arr: "10:05",
-    cls: "2A — AC 2 Tier",
-    passengers: [
-      { name: "Arjun M.", init: "AM", seat: "S4 · 14 · Side Upper", status: "RAC 23" },
-    ]
-  },
-  "4810235198": {
-    train: "12137 Punjab Mail",
-    from: "New Delhi", fromCode: "NDLS",
-    to: "Mumbai CSMT", toCode: "CSTM",
-    date: "15 Apr 2025", dep: "19:35", arr: "15:10",
-    cls: "SL — Sleeper",
-    passengers: [
-      { name: "Neha S.", init: "NS", seat: "—", status: "WL 47" },
-    ]
-  }
-};
+async function checkPNR(){
+
+    const pnr = document.getElementById("pnrInput").value;
+
+    const response = await fetch(`/pnrStatus/${pnr}`);
+
+    const result = await response.json();
+
+    const data = result.data;
+    const passenger = data.passengerList[0];
+
+    document.getElementById("result").innerHTML = `
+    
+    <h2>Train Details</h2>
+
+    <table>
+        <tr><th>Train</th><td>${data.trainName}</td></tr>
+        <tr><th>Train Number</th><td>${data.trainNumber}</td></tr>
+        <tr><th>From</th><td>${data.sourceStation}</td></tr>
+        <tr><th>To</th><td>${data.destinationStation}</td></tr>
+        <tr><th>Journey Date</th><td>${data.dateOfJourney}</td></tr>
+        <tr><th>Class</th><td>${data.journeyClass}</td></tr>
+        <tr><th>Chart Status</th><td>${data.chartStatus}</td></tr>
+    </table>
+
+    <h2>Passenger Status</h2>
+
+    <table>
+        <tr>
+            <th>Passenger</th>
+            <th>Status</th>
+            <th>Coach</th>
+            <th>Berth</th>
+        </tr>
+
+        <tr>
+            <td>${passenger.passengerSerialNumber}</td>
+            <td>${passenger.currentStatus}</td>
+            <td>${passenger.currentCoachId}</td>
+            <td>${passenger.currentBerthNo} (${passenger.currentBerthCode})</td>
+        </tr>
+    </table>
+
+    `;
+}
 
 function badgeStyle(s) {
   if (s === "CNF")          return "background:rgba(46,204,113,0.15);color:#2ecc71";
@@ -353,76 +365,7 @@ function bannerStyle(passengers) {
   return             { bg: "rgba(255,179,71,0.09)",  color: "#ffb347", icon: "◎", text: "RAC — RESERVATION AGAINST CANCELLATION" };
 }
 
-function checkPNR() {
-  const input = document.getElementById('pnrInput');
-  const btn   = document.getElementById('checkBtn');
-  const err   = document.getElementById('errorMsg');
-  const card  = document.getElementById('resultCard');
-  const pnr   = input.value.trim();
 
-  if (!pnr) return;
-
-  err.style.display  = 'none';
-  card.style.display = 'none';
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loading-dots">Checking</span>';
-
-  setTimeout(() => {
-    btn.disabled = false;
-    btn.textContent = 'Check →';
-
-    const data = DB[pnr];
-    if (!data) {
-      err.textContent  = '⚠  PNR not found. Please check the number and try again.';
-      err.style.display = 'block';
-      return;
-    }
-
-    const b = bannerStyle(data.passengers);
-
-    const paxHTML = data.passengers.map(p => `
-      <div class="pax-item">
-        <div class="pax-avatar">${p.init}</div>
-        <div class="pax-info">
-          <div class="pax-name">${p.name}</div>
-          <div class="pax-seat">${p.seat}</div>
-        </div>
-        <div class="badge" style="${badgeStyle(p.status)}">${p.status}</div>
-      </div>
-    `).join('');
-
-    card.innerHTML = `
-      <div class="banner" style="background:${b.bg};color:${b.color}">
-        <span>${b.icon}</span> ${b.text}
-      </div>
-      <div class="train-section">
-        <div class="train-name">${data.train}</div>
-        <div class="train-meta">${data.cls}</div>
-        <div class="journey">
-          <div class="j-end">
-            <div class="j-time">${data.dep}</div>
-            <div class="j-station">${data.from}<br><span style="color:#ff6b2b">${data.fromCode}</span></div>
-          </div>
-          <div class="j-mid">
-            <div class="j-date">${data.date}</div>
-            <div class="j-line"><div class="j-dot"></div></div>
-          </div>
-          <div class="j-end">
-            <div class="j-time">${data.arr}</div>
-            <div class="j-station">${data.to}<br><span style="color:#ff6b2b">${data.toCode}</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="divider"></div>
-      <div class="pax-section">
-        <div class="pax-heading">PASSENGERS (${data.passengers.length})</div>
-        <div class="pax-list">${paxHTML}</div>
-      </div>
-    `;
-
-    card.style.display = 'block';
-  }, 800);
-}
 </script>
 </body>
 </html>
