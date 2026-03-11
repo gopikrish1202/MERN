@@ -3,1117 +3,426 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RailMind — Smarter Indian Rail</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&family=Noto+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>RailMind — PNR Status</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&family=Noto+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0b0f;
-    --surface: #12141a;
-    --surface2: #1a1d26;
-    --border: #252836;
-    --accent: #ff6b2b;
-    --accent2: #ffb347;
-    --blue: #3d8ef8;
-    --green: #2ecc71;
-    --red: #e74c3c;
-    --text: #e8eaf0;
-    --muted: #7a7f96;
-    --rail-orange: #ff6b2b;
-  }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: 'Noto Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
     min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ANIMATED RAIL TRACK BACKGROUND */
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 4px;
-    height: 100vh;
-    background: repeating-linear-gradient(
-      to bottom,
-      var(--border) 0px,
-      var(--border) 20px,
-      transparent 20px,
-      transparent 40px
-    );
-    opacity: 0.3;
-    z-index: 0;
-    animation: trackScroll 2s linear infinite;
-  }
-
-  @keyframes trackScroll {
-    from { background-position: 0 0; }
-    to { background-position: 0 40px; }
-  }
-
-  /* NAV */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    background: #0a0b0f;
+    color: #e8eaf0;
+    font-family: 'Noto Sans', sans-serif;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    padding: 18px 40px;
-    background: rgba(10,11,15,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
+    padding: 48px 20px 60px;
   }
 
-  .logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 1.5rem;
-    letter-spacing: -0.5px;
+  .logo-row {
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-bottom: 6px;
   }
 
   .logo-icon {
-    width: 34px;
-    height: 34px;
-    background: var(--accent);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 36px; height: 36px;
+    background: #ff6b2b;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
     font-size: 18px;
   }
 
-  .logo span { color: var(--accent); }
-
-  .nav-tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--surface);
-    padding: 5px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-  }
-
-  .nav-tab {
-    padding: 8px 18px;
-    border-radius: 8px;
-    border: none;
-    background: transparent;
-    color: var(--muted);
-    font-family: 'Noto Sans', sans-serif;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-weight: 500;
-  }
-
-  .nav-tab.active {
-    background: var(--accent);
-    color: white;
-  }
-
-  .nav-tab:hover:not(.active) {
-    background: var(--surface2);
-    color: var(--text);
-  }
-
-  .nav-badge {
-    background: var(--red);
-    color: white;
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 10px;
-    margin-left: 5px;
-    font-family: 'Space Mono', monospace;
-  }
-
-  /* HERO */
-  .hero {
-    position: relative;
-    z-index: 1;
-    padding: 60px 40px 40px;
-    text-align: center;
-  }
-
-  .hero-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255,107,43,0.12);
-    border: 1px solid rgba(255,107,43,0.3);
-    color: var(--accent);
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-family: 'Space Mono', monospace;
-    margin-bottom: 24px;
-    animation: pulseGlow 2s ease-in-out infinite;
-  }
-
-  @keyframes pulseGlow {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,43,0.2); }
-    50% { box-shadow: 0 0 20px 4px rgba(255,107,43,0.15); }
-  }
-
-  .hero h1 {
+  .logo-text {
     font-family: 'Syne', sans-serif;
-    font-size: 3.5rem;
     font-weight: 800;
-    line-height: 1.1;
-    margin-bottom: 16px;
-    background: linear-gradient(135deg, #fff 0%, var(--accent2) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: 1.4rem;
   }
 
-  .hero p {
-    color: var(--muted);
-    font-size: 1.05rem;
-    max-width: 520px;
-    margin: 0 auto 40px;
-    line-height: 1.7;
-  }
+  .logo-text span { color: #ff6b2b; }
 
-  /* MAIN GRID */
-  .main-grid {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    padding: 0 40px 40px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.2s, transform 0.2s;
-  }
-
-  .card:hover {
-    border-color: rgba(255,107,43,0.3);
-    transform: translateY(-2px);
-  }
-
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .card:hover::before { opacity: 1; }
-
-  .card-full { grid-column: 1 / -1; }
-
-  .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-
-  .card-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .card-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-  }
-
-  .icon-orange { background: rgba(255,107,43,0.15); }
-  .icon-blue { background: rgba(61,142,248,0.15); }
-  .icon-green { background: rgba(46,204,113,0.15); }
-  .icon-purple { background: rgba(150,100,250,0.15); }
-
-  /* JOURNEY PLANNER */
-  .route-input {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .station-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .station-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .dot-start { background: var(--green); }
-  .dot-mid { background: var(--accent2); }
-  .dot-end { background: var(--accent); }
-
-  .station-line {
-    width: 2px;
-    height: 16px;
-    background: var(--border);
-    margin: 0 4px;
-  }
-
-  .inp {
-    flex: 1;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 14px;
-    color: var(--text);
+  .subtitle {
+    color: #7a7f96;
+    font-size: 0.78rem;
     font-family: 'Space Mono', monospace;
-    font-size: 0.82rem;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .inp:focus { border-color: var(--accent); }
-
-  .inp::placeholder { color: var(--muted); }
-
-  .date-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 4px;
-  }
-
-  .btn {
-    padding: 11px 22px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.88rem;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .btn-primary {
-    background: var(--accent);
-    color: white;
-    width: 100%;
-    justify-content: center;
-    margin-top: 14px;
-  }
-
-  .btn-primary:hover { background: #e55a1e; transform: scale(1.01); }
-
-  .btn-sm {
-    padding: 6px 12px;
-    font-size: 0.75rem;
-    border-radius: 7px;
-    background: var(--surface2);
-    color: var(--muted);
-    border: 1px solid var(--border);
-  }
-
-  .btn-sm:hover { color: var(--text); border-color: var(--accent); }
-
-  /* DELAY INTELLIGENCE */
-  .delay-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    margin-bottom: 16px;
-  }
-
-  .delay-cell {
-    aspect-ratio: 1;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.65rem;
-    font-family: 'Space Mono', monospace;
-    cursor: pointer;
-    transition: transform 0.15s;
-  }
-
-  .delay-cell:hover { transform: scale(1.15); }
-
-  .delay-none { background: rgba(46,204,113,0.2); color: #2ecc71; }
-  .delay-low { background: rgba(255,179,71,0.2); color: var(--accent2); }
-  .delay-med { background: rgba(255,107,43,0.2); color: var(--accent); }
-  .delay-high { background: rgba(231,76,60,0.25); color: var(--red); }
-
-  .delay-legend {
-    display: flex;
-    gap: 14px;
-    font-size: 0.72rem;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
-  }
-
-  .legend-dot {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 2px;
-    margin-right: 4px;
-  }
-
-  /* COACH MAP */
-  .platform-bar {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 12px;
-  }
-
-  .platform-label {
-    font-size: 0.72rem;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
-    margin-bottom: 8px;
-  }
-
-  .coaches-scroll {
-    display: flex;
-    gap: 4px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
-
-  .coaches-scroll::-webkit-scrollbar { height: 3px; }
-  .coaches-scroll::-webkit-scrollbar-track { background: var(--border); border-radius: 2px; }
-  .coaches-scroll::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
-
-  .coach {
-    min-width: 38px;
-    height: 32px;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.62rem;
-    font-family: 'Space Mono', monospace;
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition: all 0.15s;
-    flex-shrink: 0;
-  }
-
-  .coach:hover { transform: translateY(-2px); }
-
-  .coach-loco { background: rgba(61,142,248,0.2); border-color: rgba(61,142,248,0.4); color: var(--blue); }
-  .coach-ac1 { background: rgba(150,100,250,0.2); border-color: rgba(150,100,250,0.3); color: #9664fa; }
-  .coach-ac2 { background: rgba(150,100,250,0.15); border-color: rgba(150,100,250,0.2); color: #9664fa; }
-  .coach-ac3 { background: rgba(61,142,248,0.15); border-color: rgba(61,142,248,0.2); color: var(--blue); }
-  .coach-sl { background: rgba(255,179,71,0.15); border-color: rgba(255,179,71,0.25); color: var(--accent2); }
-  .coach-gen { background: rgba(122,127,150,0.15); border-color: rgba(122,127,150,0.2); color: var(--muted); }
-  .coach-your { background: rgba(46,204,113,0.2); border-color: rgba(46,204,113,0.5); color: var(--green); box-shadow: 0 0 8px rgba(46,204,113,0.3); }
-
-  .walk-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    background: rgba(46,204,113,0.08);
-    border: 1px solid rgba(46,204,113,0.2);
-    border-radius: 8px;
-    font-size: 0.82rem;
-    color: var(--green);
-    font-family: 'Space Mono', monospace;
-  }
-
-  /* GROUP TRAVEL */
-  .pnr-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .pnr-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    background: var(--surface2);
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    transition: border-color 0.2s;
-  }
-
-  .pnr-item:hover { border-color: rgba(255,107,43,0.3); }
-
-  .pnr-avatar {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    font-weight: 700;
-    font-family: 'Syne', sans-serif;
-    flex-shrink: 0;
-  }
-
-  .pnr-info { flex: 1; }
-
-  .pnr-name {
-    font-size: 0.82rem;
-    font-weight: 500;
-  }
-
-  .pnr-seat {
-    font-size: 0.72rem;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
-  }
-
-  .status-badge {
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-size: 0.68rem;
-    font-family: 'Space Mono', monospace;
-  }
-
-  .badge-cnf { background: rgba(46,204,113,0.15); color: var(--green); }
-  .badge-wl { background: rgba(231,76,60,0.15); color: var(--red); }
-  .badge-rac { background: rgba(255,179,71,0.15); color: var(--accent2); }
-
-  /* TATKAL TIMER */
-  .tatkal-card {
-    background: linear-gradient(135deg, rgba(255,107,43,0.08), rgba(255,179,71,0.05));
-    border-color: rgba(255,107,43,0.25);
-  }
-
-  .countdown-display {
-    display: flex;
-    gap: 12px;
-    margin: 20px 0;
-    justify-content: center;
-  }
-
-  .time-block {
-    text-align: center;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 16px;
-    min-width: 64px;
-  }
-
-  .time-value {
-    font-family: 'Space Mono', monospace;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--accent);
-    line-height: 1;
-  }
-
-  .time-label {
-    font-size: 0.65rem;
-    color: var(--muted);
-    margin-top: 4px;
-    font-family: 'Space Mono', monospace;
-    text-transform: uppercase;
+    margin-bottom: 36px;
     letter-spacing: 1px;
   }
 
-  .tatkal-tips {
+  .card {
+    width: 100%;
+    max-width: 460px;
+    background: #12141a;
+    border: 1px solid #252836;
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 18px;
+  }
+
+  .field-label {
+    font-size: 0.7rem;
+    color: #7a7f96;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .input-row { display: flex; gap: 8px; }
+
+  input[type="text"] {
+    flex: 1;
+    background: #1a1d26;
+    border: 1px solid #252836;
+    border-radius: 9px;
+    padding: 11px 14px;
+    color: #e8eaf0;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    letter-spacing: 1px;
+  }
+
+  input[type="text"]:focus { border-color: rgba(255,107,43,0.6); }
+  input[type="text"]::placeholder { color: #3a3d4a; letter-spacing: 0; }
+
+  .btn {
+    background: #ff6b2b;
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    padding: 11px 20px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn:hover:not(:disabled) { background: #e55a1e; transform: scale(1.02); }
+  .btn:disabled { background: #5a3018; color: #a06040; cursor: not-allowed; }
+
+  .error-msg {
+    margin-top: 12px;
+    padding: 10px 13px;
+    background: rgba(231,76,60,0.09);
+    border: 1px solid rgba(231,76,60,0.22);
+    border-radius: 8px;
+    font-size: 0.76rem;
+    color: #e74c3c;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ── RESULT CARD ── */
+  .result-card {
+    width: 100%;
+    max-width: 460px;
+    background: #12141a;
+    border: 1px solid #252836;
+    border-radius: 16px;
+    overflow: hidden;
+    animation: fadeUp 0.32s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .banner {
+    padding: 11px 20px;
+    border-bottom: 1px solid #252836;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .train-section { padding: 20px 20px 0; }
+
+  .train-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 3px;
+  }
+
+  .train-meta {
+    font-size: 0.7rem;
+    color: #7a7f96;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .journey {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0 4px;
+  }
+
+  .j-end { text-align: center; }
+
+  .j-time {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .j-station {
+    font-size: 0.65rem;
+    color: #7a7f96;
+    margin-top: 3px;
+  }
+
+  .j-mid {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    align-items: center;
+    gap: 5px;
   }
 
-  .tip {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: 0.78rem;
-    color: var(--muted);
-    line-height: 1.5;
+  .j-date {
+    font-size: 0.62rem;
+    color: #7a7f96;
+    font-family: 'Space Mono', monospace;
   }
 
-  .tip-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    flex-shrink: 0;
-    margin-top: 5px;
-  }
-
-  /* LIVE STATUS BAR */
-  .live-bar {
+  .j-line {
+    width: 100%;
+    height: 1px;
+    background: #252836;
     position: relative;
-    z-index: 1;
+  }
+
+  .j-dot {
+    position: absolute;
+    top: -3px; left: 50%;
+    transform: translateX(-50%);
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #ff6b2b;
+  }
+
+  .divider { height: 1px; background: #252836; margin: 16px 20px 0; }
+
+  .pax-section { padding: 14px 20px 20px; }
+
+  .pax-heading {
+    font-size: 0.68rem;
+    color: #7a7f96;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .pax-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .pax-item {
     display: flex;
     align-items: center;
-    gap: 20px;
-    padding: 14px 40px;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    overflow: hidden;
-    margin-bottom: 30px;
+    gap: 11px;
+    padding: 10px 12px;
+    background: #1a1d26;
+    border-radius: 10px;
+    border: 1px solid #252836;
   }
 
-  .live-dot {
-    width: 8px; height: 8px;
+  .pax-avatar {
+    width: 32px; height: 32px;
     border-radius: 50%;
-    background: var(--green);
-    animation: blink 1.2s ease-in-out infinite;
-    flex-shrink: 0;
-  }
-
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-
-  .live-text {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-
-  .live-separator {
-    color: var(--border);
-    font-size: 1.2rem;
-  }
-
-  .train-ticker {
-    display: flex;
-    gap: 32px;
-    animation: ticker 20s linear infinite;
-    flex-shrink: 0;
-  }
-
-  @keyframes ticker {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-
-  .ticker-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.72rem;
-    white-space: nowrap;
-    color: var(--text);
-  }
-
-  .ticker-delay { color: var(--red); }
-  .ticker-ontime { color: var(--green); }
-
-  /* SEARCH BAR (hero) */
-  .search-hero {
-    display: flex;
-    max-width: 560px;
-    margin: 0 auto;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 6px;
-    gap: 8px;
-    transition: border-color 0.2s;
-  }
-
-  .search-hero:focus-within {
-    border-color: rgba(255,107,43,0.5);
-    box-shadow: 0 0 0 3px rgba(255,107,43,0.08);
-  }
-
-  .search-hero input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text);
-    font-family: 'Space Mono', monospace;
-    font-size: 0.88rem;
-    padding: 8px 12px;
-  }
-
-  .search-hero input::placeholder { color: var(--muted); }
-
-  /* STATS ROW */
-  .stats-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-    max-width: 1200px;
-    margin: 0 auto 30px;
-    padding: 0 40px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px;
-    text-align: center;
-  }
-
-  .stat-val {
+    background: rgba(255,107,43,0.13);
+    color: #ff6b2b;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
     font-family: 'Syne', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: var(--accent);
+    flex-shrink: 0;
   }
 
-  .stat-label {
-    font-size: 0.72rem;
-    color: var(--muted);
-    margin-top: 4px;
+  .pax-info { flex: 1; min-width: 0; }
+  .pax-name { font-size: 0.82rem; font-weight: 500; }
+  .pax-seat { font-size: 0.68rem; color: #7a7f96; font-family: 'Space Mono', monospace; margin-top: 2px; }
+
+  .badge {
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.68rem;
     font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    flex-shrink: 0;
   }
 
-  /* RESPONSIVE */
-  @media (max-width: 768px) {
-    nav { padding: 14px 20px; }
-    .nav-tabs { display: none; }
-    .hero { padding: 40px 20px 30px; }
-    .hero h1 { font-size: 2.2rem; }
-    .main-grid { grid-template-columns: 1fr; padding: 0 20px 40px; }
-    .card-full { grid-column: 1; }
-    .stats-row { grid-template-columns: 1fr 1fr; padding: 0 20px; }
-    .live-bar { padding: 12px 20px; }
-  }
-
-  /* FEATURE RIBBON */
-  .feature-ribbon {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 0 40px 28px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .feature-tag {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 0.78rem;
-    color: var(--muted);
-    transition: all 0.2s;
-    cursor: pointer;
-  }
-
-  .feature-tag:hover {
-    border-color: var(--accent);
-    color: var(--text);
-    background: rgba(255,107,43,0.06);
-  }
-
-  .select {
-    flex: 1;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 14px;
-    color: var(--text);
+  .hint {
+    margin-top: 24px;
+    font-size: 0.68rem;
+    color: #2a2d3a;
     font-family: 'Space Mono', monospace;
-    font-size: 0.82rem;
-    outline: none;
+    text-align: center;
+    line-height: 1.8;
   }
 
-  .progress-bar {
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-    margin-top: 8px;
+  .loading-dots::after {
+    content: '';
+    animation: dots 1s steps(3, end) infinite;
   }
 
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 2px;
-    transition: width 0.5s;
+  @keyframes dots {
+    0%   { content: '.'; }
+    33%  { content: '..'; }
+    66%  { content: '...'; }
   }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="logo">
-    <div class="logo-icon">🚂</div>
-    Rail<span>Mind</span>
-  </div>
-  <div class="nav-tabs">
-    <button class="nav-tab active">Plan Trip</button>
-    <button class="nav-tab">Coach Map</button>
-    <button class="nav-tab">Group Travel</button>
-    <button class="nav-tab">Tatkal <span class="nav-badge">LIVE</span></button>
-    <button class="nav-tab">Station Reviews</button>
-  </div>
-  <button class="btn btn-sm" style="font-family:'Space Mono',monospace">Sign In</button>
-</nav>
+<div class="logo-row">
+  <div class="logo-icon">🚂</div>
+  <div class="logo-text">Rail<span>Mind</span></div>
+</div>
+<p class="subtitle">PNR STATUS CHECKER</p>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-chip">
-    <div class="live-dot" style="width:6px;height:6px;margin:0"></div>
-    Features IRCTC doesn't have — yet
+<div class="card">
+  <span class="field-label">ENTER 10-DIGIT PNR NUMBER</span>
+  <div class="input-row">
+    <input type="text" id="pnrInput" placeholder="e.g. 4810234567" maxlength="10"
+      oninput="this.value=this.value.replace(/\D/g,'')"
+      onkeydown="if(event.key==='Enter') checkPNR()" />
+    <button class="btn" id="checkBtn" onclick="checkPNR()">Check →</button>
   </div>
-  <h1>Travel smarter.<br>Not just faster.</h1>
-  <p>Intelligent planning, delay prediction, coach positioning, group coordination — everything IRCTC forgot to build.</p>
-  <div class="search-hero">
-    <input type="text" placeholder="Search train name, number, or station..." />
-    <button class="btn btn-primary" style="margin:0;width:auto;padding:10px 20px">Search →</button>
-  </div>
+  <div id="errorMsg" style="display:none" class="error-msg"></div>
 </div>
 
-<!-- FEATURE TAGS -->
-<div class="feature-ribbon">
-  <div class="feature-tag">🗺️ Multi-city Route Optimizer</div>
-  <div class="feature-tag">📊 Delay History & AI Prediction</div>
-  <div class="feature-tag">🚃 Live Coach Position</div>
-  <div class="feature-tag">👥 Group PNR Merge</div>
-  <div class="feature-tag">⏰ Tatkal Strategy</div>
-  <div class="feature-tag">⭐ Station Reviews</div>
-</div>
+<div id="resultCard" style="display:none" class="result-card"></div>
 
-<!-- LIVE TICKER BAR -->
-<div class="live-bar">
-  <div class="live-dot"></div>
-  <div class="live-text">LIVE TRAINS</div>
-  <div class="live-separator">|</div>
-  <div style="overflow:hidden;flex:1">
-    <div class="train-ticker" id="ticker">
-      <div class="ticker-item">12301 Howrah Rajdhani <span class="ticker-delay">+47 min late</span></div>
-      <div class="ticker-item">12952 Mumbai Rajdhani <span class="ticker-ontime">On Time ✓</span></div>
-      <div class="ticker-item">22691 Rajdhani Express <span class="ticker-delay">+12 min late</span></div>
-      <div class="ticker-item">12004 Swarna Shatabdi <span class="ticker-ontime">On Time ✓</span></div>
-      <div class="ticker-item">12286 Duronto Express <span class="ticker-delay">+31 min late</span></div>
-      <div class="ticker-item">12431 Trivandrum Rajdhani <span class="ticker-ontime">On Time ✓</span></div>
-      <!-- duplicate for infinite scroll -->
-      <div class="ticker-item">12301 Howrah Rajdhani <span class="ticker-delay">+47 min late</span></div>
-      <div class="ticker-item">12952 Mumbai Rajdhani <span class="ticker-ontime">On Time ✓</span></div>
-      <div class="ticker-item">22691 Rajdhani Express <span class="ticker-delay">+12 min late</span></div>
-      <div class="ticker-item">12004 Swarna Shatabdi <span class="ticker-ontime">On Time ✓</span></div>
-      <div class="ticker-item">12286 Duronto Express <span class="ticker-delay">+31 min late</span></div>
-      <div class="ticker-item">12431 Trivandrum Rajdhani <span class="ticker-ontime">On Time ✓</span></div>
-    </div>
-  </div>
-</div>
-
-<!-- STATS -->
-<div class="stats-row">
-  <div class="stat-card">
-    <div class="stat-val">2.1L+</div>
-    <div class="stat-label">Trains Tracked</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-val">7,349</div>
-    <div class="stat-label">Stations Mapped</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-val">94%</div>
-    <div class="stat-label">Delay Accuracy</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-val">38s</div>
-    <div class="stat-label">Avg Tatkal Save</div>
-  </div>
-</div>
-
-<!-- MAIN GRID -->
-<div class="main-grid">
-
-  <!-- TRIP PLANNER -->
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">
-        <div class="card-icon icon-orange">🗺️</div>
-        Smart Trip Planner
-      </div>
-      <button class="btn btn-sm">+ Add Stop</button>
-    </div>
-    <div class="route-input">
-      <div class="station-row">
-        <div style="display:flex;flex-direction:column;align-items:center">
-          <div class="station-dot dot-start"></div>
-          <div class="station-line"></div>
-        </div>
-        <input class="inp" type="text" placeholder="From — New Delhi (NDLS)" value="New Delhi (NDLS)">
-      </div>
-      <div class="station-row">
-        <div style="display:flex;flex-direction:column;align-items:center">
-          <div class="station-dot dot-mid"></div>
-          <div class="station-line"></div>
-        </div>
-        <input class="inp" type="text" placeholder="Via — Bhopal (BPL) (optional)" value="Bhopal (BPL)">
-      </div>
-      <div class="station-row">
-        <div class="station-dot dot-end"></div>
-        <input class="inp" type="text" placeholder="To — Mumbai CSMT (CSTM)" value="Mumbai CSMT (CSTM)">
-      </div>
-      <div class="date-row">
-        <input class="inp" type="date" value="2025-04-15">
-        <select class="select">
-          <option>3A - AC 3 Tier</option>
-          <option>2A - AC 2 Tier</option>
-          <option>SL - Sleeper</option>
-          <option>1A - First AC</option>
-        </select>
-      </div>
-      <button class="btn btn-primary" onclick="findRoute()">🔍 Find Optimal Route</button>
-    </div>
-    <!-- RESULT PREVIEW -->
-    <div id="routeResult" style="display:none;margin-top:16px">
-      <div style="font-size:0.72rem;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:8px">BEST ROUTE FOUND</div>
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem">12137 Punjab Mail</div>
-          <div style="color:var(--green);font-family:'Space Mono',monospace;font-size:0.75rem">₹1,245 · 19h 35m</div>
-        </div>
-        <div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div>
-        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:0.72rem;color:var(--muted);font-family:'Space Mono',monospace">
-          <span>NDLS 19:35</span><span>BPL 04:10</span><span>CSTM 15:10</span>
-        </div>
-      </div>
-      <div style="font-size:0.72rem;color:var(--accent);font-family:'Space Mono',monospace;margin-top:8px">💡 Layover at Bhopal: 2h 20min — Kedar Mall is 8 min away</div>
-    </div>
-  </div>
-
-  <!-- DELAY INTELLIGENCE -->
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">
-        <div class="card-icon icon-blue">📊</div>
-        Delay Intelligence
-      </div>
-      <span style="font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted)">12951 Mumbai Rajdhani</span>
-    </div>
-    <div style="font-size:0.7rem;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:8px">LAST 90 DAYS — DELAY HEATMAP (Mon→Sun)</div>
-    <div class="delay-grid" id="heatmap"></div>
-    <div class="delay-legend">
-      <span><span class="legend-dot" style="background:rgba(46,204,113,0.5)"></span>On time</span>
-      <span><span class="legend-dot" style="background:rgba(255,179,71,0.5)"></span>&lt;30 min</span>
-      <span><span class="legend-dot" style="background:rgba(255,107,43,0.5)"></span>30-60 min</span>
-      <span><span class="legend-dot" style="background:rgba(231,76,60,0.5)"></span>&gt;1 hr</span>
-    </div>
-    <div style="margin-top:14px;padding:12px 14px;background:rgba(61,142,248,0.08);border:1px solid rgba(61,142,248,0.2);border-radius:8px">
-      <div style="font-size:0.72rem;color:var(--blue);font-family:'Space Mono',monospace;margin-bottom:4px">AI PREDICTION — YOUR DATE (Apr 15)</div>
-      <div style="font-size:0.82rem">Expected delay: <strong style="color:var(--accent2)">+18–35 minutes</strong></div>
-      <div style="font-size:0.72rem;color:var(--muted);margin-top:2px">Based on 47 past runs on Tuesdays in summer season</div>
-    </div>
-  </div>
-
-  <!-- COACH POSITION MAP -->
-  <div class="card card-full">
-    <div class="card-header">
-      <div class="card-title">
-        <div class="card-icon icon-green">🚃</div>
-        Live Coach Position — Platform Guide
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <span style="font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--muted)">Platform 4 · Hazrat Nizamuddin</span>
-        <button class="btn btn-sm">Change</button>
-      </div>
-    </div>
-    <div class="platform-bar">
-      <div class="platform-label">← TRAIN FRONT (ENGINE)  &nbsp;&nbsp;&nbsp; PLATFORM 4 — NZM &nbsp;&nbsp;&nbsp;  TRAIN REAR →</div>
-      <div class="coaches-scroll">
-        <div class="coach coach-loco">LOCO</div>
-        <div class="coach coach-gen">GEN1</div>
-        <div class="coach coach-gen">GEN2</div>
-        <div class="coach coach-ac1">H1</div>
-        <div class="coach coach-ac2">A1</div>
-        <div class="coach coach-ac2">A2</div>
-        <div class="coach coach-ac3">B1</div>
-        <div class="coach coach-ac3">B2</div>
-        <div class="coach coach-your">B3 ★</div>
-        <div class="coach coach-ac3">B4</div>
-        <div class="coach coach-ac3">B5</div>
-        <div class="coach coach-sl">S1</div>
-        <div class="coach coach-sl">S2</div>
-        <div class="coach coach-sl">S3</div>
-        <div class="coach coach-sl">S4</div>
-        <div class="coach coach-sl">S5</div>
-        <div class="coach coach-sl">S6</div>
-        <div class="coach coach-sl">S7</div>
-        <div class="coach coach-gen">GEN3</div>
-        <div class="coach coach-gen">GEN4</div>
-      </div>
-    </div>
-    <div class="walk-indicator">
-      <span style="font-size:1.2rem">🚶</span>
-      Walk ~<strong style="margin: 0 4px">280 metres</strong> from the main entrance toward the front of the platform. Your coach B3 is near position 8/20.
-    </div>
-    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;font-size:0.72rem;font-family:'Space Mono',monospace;color:var(--muted)">
-      <span style="color:#9664fa">■ 1A/2A</span>
-      <span style="color:var(--blue)">■ 3A/Exe</span>
-      <span style="color:var(--accent2)">■ Sleeper</span>
-      <span style="color:var(--muted)">■ General</span>
-      <span style="color:var(--green)">■ Your Coach</span>
-    </div>
-  </div>
-
-  <!-- GROUP TRAVEL -->
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">
-        <div class="card-icon icon-purple">👥</div>
-        Group Travel Hub
-      </div>
-      <button class="btn btn-sm">+ Invite Friend</button>
-    </div>
-    <div style="font-size:0.72rem;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:12px">TRIP: DELHI → MUMBAI · APR 15 · 12951</div>
-    <div class="pnr-list">
-      <div class="pnr-item">
-        <div class="pnr-avatar" style="background:rgba(255,107,43,0.2);color:var(--accent)">RK</div>
-        <div class="pnr-info">
-          <div class="pnr-name">Rahul K.</div>
-          <div class="pnr-seat">B3 · 28 · Lower · PNR 4810234567</div>
-        </div>
-        <span class="status-badge badge-cnf">CNF</span>
-      </div>
-      <div class="pnr-item">
-        <div class="pnr-avatar" style="background:rgba(46,204,113,0.2);color:var(--green)">PT</div>
-        <div class="pnr-info">
-          <div class="pnr-name">Priya T.</div>
-          <div class="pnr-seat">B3 · 30 · Lower · PNR 4810234891</div>
-        </div>
-        <span class="status-badge badge-cnf">CNF</span>
-      </div>
-      <div class="pnr-item">
-        <div class="pnr-avatar" style="background:rgba(61,142,248,0.2);color:var(--blue)">AM</div>
-        <div class="pnr-info">
-          <div class="pnr-name">Arjun M.</div>
-          <div class="pnr-seat">S4 · 14 · Side Upper · PNR 4810235012</div>
-        </div>
-        <span class="status-badge badge-rac">RAC 23</span>
-      </div>
-      <div class="pnr-item">
-        <div class="pnr-avatar" style="background:rgba(231,76,60,0.2);color:var(--red)">NS</div>
-        <div class="pnr-info">
-          <div class="pnr-name">Neha S.</div>
-          <div class="pnr-seat">— · PNR 4810235198</div>
-        </div>
-        <span class="status-badge badge-wl">WL 47</span>
-      </div>
-    </div>
-    <div style="margin-top:12px;padding:10px 12px;background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.2);border-radius:8px;font-size:0.78rem">
-      ⚠️ <strong>Neha is on WL 47.</strong> Tatkal opens tomorrow 10AM. Book alternate or wait for chart.
-    </div>
-  </div>
-
-  <!-- TATKAL ASSISTANT -->
-  <div class="card tatkal-card">
-    <div class="card-header">
-      <div class="card-title">
-        <div class="card-icon icon-orange">⏰</div>
-        Tatkal Strategy Assistant
-      </div>
-      <div style="display:flex;align-items:center;gap:6px">
-        <div class="live-dot"></div>
-        <span style="font-size:0.72rem;font-family:'Space Mono',monospace;color:var(--green)">LIVE</span>
-      </div>
-    </div>
-    <div style="font-size:0.72rem;color:var(--muted);font-family:'Space Mono',monospace;text-align:center">TATKAL OPENS IN (AC — 10:00 AM)</div>
-    <div class="countdown-display" id="countdown">
-      <div class="time-block"><div class="time-value" id="h">14</div><div class="time-label">HRS</div></div>
-      <div class="time-block"><div class="time-value" id="m">22</div><div class="time-label">MIN</div></div>
-      <div class="time-block"><div class="time-value" id="s">08</div><div class="time-label">SEC</div></div>
-    </div>
-    <div class="tatkal-tips">
-      <div class="tip"><div class="tip-dot"></div>Use Chrome, not the IRCTC app — 30% faster form fill on desktop</div>
-      <div class="tip"><div class="tip-dot"></div>Pre-save your payment method as UPI — avoid net banking OTP lag</div>
-      <div class="tip"><div class="tip-dot"></div>Master list is ready — open IRCTC in incognito and log in 2 min before 10</div>
-      <div class="tip"><div class="tip-dot"></div>Expected fare: ₹875 (base) + ₹300 Tatkal = <strong style="color:var(--accent)">₹1,175</strong></div>
-      <div class="tip"><div class="tip-dot"></div>Availability check shows 34 seats currently — good odds ✓</div>
-    </div>
-  </div>
-
-</div>
+<p class="hint">Demo PNRs to try:<br>4810234567 &nbsp;·&nbsp; 4810235012 &nbsp;·&nbsp; 4810235198</p>
 
 <script>
-  // Generate heatmap
-  const heatmap = document.getElementById('heatmap');
-  const delayClasses = ['delay-none','delay-none','delay-low','delay-low','delay-med','delay-high'];
-  for (let i = 0; i < 91; i++) {
-    const d = document.createElement('div');
-    d.className = 'delay-cell ' + delayClasses[Math.floor(Math.random() * delayClasses.length)];
-    const days = ['M','T','W','T','F','S','S'];
-    d.textContent = days[i % 7];
-    heatmap.appendChild(d);
+const DB = {
+  "4810234567": {
+    train: "12951 Mumbai Rajdhani",
+    from: "New Delhi", fromCode: "NDLS",
+    to: "Mumbai Central", toCode: "MMCT",
+    date: "15 Apr 2025", dep: "16:25", arr: "08:15",
+    cls: "3A — AC 3 Tier",
+    passengers: [
+      { name: "Rahul K.",  init: "RK", seat: "B3 · 28 · Lower",       status: "CNF"    },
+      { name: "Priya T.",  init: "PT", seat: "B3 · 30 · Lower",       status: "CNF"    },
+    ]
+  },
+  "4810235012": {
+    train: "12953 August Kranti Rajdhani",
+    from: "Hazrat Nizamuddin", fromCode: "NZM",
+    to: "Mumbai Central", toCode: "MMCT",
+    date: "16 Apr 2025", dep: "17:25", arr: "10:05",
+    cls: "2A — AC 2 Tier",
+    passengers: [
+      { name: "Arjun M.", init: "AM", seat: "S4 · 14 · Side Upper", status: "RAC 23" },
+    ]
+  },
+  "4810235198": {
+    train: "12137 Punjab Mail",
+    from: "New Delhi", fromCode: "NDLS",
+    to: "Mumbai CSMT", toCode: "CSTM",
+    date: "15 Apr 2025", dep: "19:35", arr: "15:10",
+    cls: "SL — Sleeper",
+    passengers: [
+      { name: "Neha S.", init: "NS", seat: "—", status: "WL 47" },
+    ]
   }
+};
 
-  // Countdown timer
-  function updateCountdown() {
-    const now = new Date();
-    const target = new Date(now);
-    target.setHours(10, 0, 0, 0);
-    if (now >= target) target.setDate(target.getDate() + 1);
-    const diff = target - now;
-    const h = Math.floor(diff / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    document.getElementById('h').textContent = String(h).padStart(2,'0');
-    document.getElementById('m').textContent = String(m).padStart(2,'0');
-    document.getElementById('s').textContent = String(s).padStart(2,'0');
-  }
-  setInterval(updateCountdown, 1000);
-  updateCountdown();
+function badgeStyle(s) {
+  if (s === "CNF")          return "background:rgba(46,204,113,0.15);color:#2ecc71";
+  if (s.startsWith("WL"))  return "background:rgba(231,76,60,0.15);color:#e74c3c";
+  if (s.startsWith("RAC")) return "background:rgba(255,179,71,0.15);color:#ffb347";
+  return "background:rgba(122,127,150,0.15);color:#7a7f96";
+}
 
-  // Route result demo
-  function findRoute() {
-    const result = document.getElementById('routeResult');
-    result.style.display = 'block';
-    result.style.opacity = '0';
-    result.style.transform = 'translateY(10px)';
-    setTimeout(() => {
-      result.style.transition = 'all 0.4s ease';
-      result.style.opacity = '1';
-      result.style.transform = 'translateY(0)';
-    }, 50);
-  }
+function bannerStyle(passengers) {
+  const allCnf = passengers.every(p => p.status === "CNF");
+  const hasWl  = passengers.some(p => p.status.startsWith("WL"));
+  if (allCnf) return { bg: "rgba(46,204,113,0.09)", color: "#2ecc71", icon: "✓", text: "ALL PASSENGERS CONFIRMED" };
+  if (hasWl)  return { bg: "rgba(231,76,60,0.09)",  color: "#e74c3c", icon: "⚠", text: "WAITLISTED — CHART NOT PREPARED" };
+  return             { bg: "rgba(255,179,71,0.09)",  color: "#ffb347", icon: "◎", text: "RAC — RESERVATION AGAINST CANCELLATION" };
+}
 
-  // Nav tab switching
-  document.querySelectorAll('.nav-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-    });
-  });
+function checkPNR() {
+  const input = document.getElementById('pnrInput');
+  const btn   = document.getElementById('checkBtn');
+  const err   = document.getElementById('errorMsg');
+  const card  = document.getElementById('resultCard');
+  const pnr   = input.value.trim();
+
+  if (!pnr) return;
+
+  err.style.display  = 'none';
+  card.style.display = 'none';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-dots">Checking</span>';
+
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = 'Check →';
+
+    const data = DB[pnr];
+    if (!data) {
+      err.textContent  = '⚠  PNR not found. Please check the number and try again.';
+      err.style.display = 'block';
+      return;
+    }
+
+    const b = bannerStyle(data.passengers);
+
+    const paxHTML = data.passengers.map(p => `
+      <div class="pax-item">
+        <div class="pax-avatar">${p.init}</div>
+        <div class="pax-info">
+          <div class="pax-name">${p.name}</div>
+          <div class="pax-seat">${p.seat}</div>
+        </div>
+        <div class="badge" style="${badgeStyle(p.status)}">${p.status}</div>
+      </div>
+    `).join('');
+
+    card.innerHTML = `
+      <div class="banner" style="background:${b.bg};color:${b.color}">
+        <span>${b.icon}</span> ${b.text}
+      </div>
+      <div class="train-section">
+        <div class="train-name">${data.train}</div>
+        <div class="train-meta">${data.cls}</div>
+        <div class="journey">
+          <div class="j-end">
+            <div class="j-time">${data.dep}</div>
+            <div class="j-station">${data.from}<br><span style="color:#ff6b2b">${data.fromCode}</span></div>
+          </div>
+          <div class="j-mid">
+            <div class="j-date">${data.date}</div>
+            <div class="j-line"><div class="j-dot"></div></div>
+          </div>
+          <div class="j-end">
+            <div class="j-time">${data.arr}</div>
+            <div class="j-station">${data.to}<br><span style="color:#ff6b2b">${data.toCode}</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="pax-section">
+        <div class="pax-heading">PASSENGERS (${data.passengers.length})</div>
+        <div class="pax-list">${paxHTML}</div>
+      </div>
+    `;
+
+    card.style.display = 'block';
+  }, 800);
+}
 </script>
 </body>
 </html>
