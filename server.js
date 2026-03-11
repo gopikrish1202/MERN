@@ -1,52 +1,31 @@
 const express = require("express");
-const path = require("path");
 const axios = require("axios");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
-// Middleware
-app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
+// endpoint that calls external API
+app.get("/pnrStatus/:pnr", async (req, res) => {
+    try {
 
-// Home route
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+        const pnr = req.params.pnr;
+
+        const response = await axios.get(
+            `https://irctc-indian-railway-pnr-status.p.rapidapi.com/getPNRStatus/${pnr}`,
+            {
+                headers: {
+                    "X-RapidAPI-Key": process.env.rapid_api_key
+                }
+            }
+        );
+
+        res.json(response.data);
+
+    } catch (error) {
+        res.status(500).json({ error: "API call failed" });
+    }
 });
 
-// AI route
-app.post("/api/chat", async (req, res) => {
-  try {
-    const message = req.body.message;
-
-  
-  console.log("api",process.env.GROQ_API_KEY)
-    const response = await axios.post(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        model: "llama-3.1-8b-instant",
-        messages: [{ role: "user", content: message }]
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-          "Content-Type": "application/json"
-        }
-      }
-    );
-  
-      console.log("response",response)
-     
-    res.json({
-      reply: response.data.choices[0].message.content
-    });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ reply: "Error from AI server" });
-  }
-});
-
-// Start server LAST
 app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
+    console.log(`Server running on port ${PORT}`);
 });
